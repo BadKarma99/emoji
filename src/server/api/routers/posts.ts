@@ -7,14 +7,8 @@ import { createTRPCRouter, privateProcedure, publicProcedure } from "(~/)/server
 import { clerkClient } from "@clerk/nextjs/server";
 import { User } from "@clerk/nextjs/dist/api";
 import { TRPCError } from "@trpc/server";
+import { filterUserForClient } from "../../helpers/filterUserForClients";
 
-const filterUserForClient = (user:User) => {
-
-    return{
-        id: user.id, name: user.username, profilePicture: user.profileImageUrl
-    }
-
-}
 
 
 // Create a new ratelimiter, that allows 3 requests per minute
