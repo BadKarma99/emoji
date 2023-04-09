@@ -36,7 +36,7 @@ export const createTRPCContext = (opts: CreateNextContextOptions) => {
   return {
     prisma,
     userId
-  };;
+  };
 };
 
 /**

@@ -18,6 +18,7 @@ import {
   useUser,
 } from "@clerk/nextjs";
 import { useState } from "react";
+import { toast } from "react-hot-toast";
 
 type postWithUser = RouterOutputs["posts"]["getAll"][number];
 
@@ -46,6 +47,14 @@ const CreatePostWizard = () => {
   const { mutateAsync: createPost,isLoading: posting } = api.posts.create.useMutation(
     {onSuccess: () => {
       void ctx.posts.getAll.invalidate();
+    },
+    onError: (e) => {
+
+      const error = e.data?.zodError?.fieldErrors.content;
+      if(error && error[0]){
+        toast.error(error[0]);
+      }
+      // toast.error("Failed to create post");
     }}
   );
 
