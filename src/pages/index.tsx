@@ -23,17 +23,17 @@ import { toast } from "react-hot-toast";
 type postWithUser = RouterOutputs["posts"]["getAll"][number];
 
 const PostView = (props: postWithUser) => {
-  const { post, auther } = props;
+  const { posts, auther } = props;
   return (
-    <div key={post.id} className="border-b border-slate-200 p-8 flex gap-3">
+    <div key={posts.id} className="border-b border-slate-200 p-8 flex gap-3">
       <img src = {auther.profilePicture} className="h-10 w-10 rounded-full" />
       <div className="flex flex-col">
       <div className="flex gap-2 text-slate-500">
      <Link href={`/@${auther.name}`}> <span className="">{auther.name}</span> </Link>
-      <Link href={`/posts/${post.id}`}><span className="text-slate-500">{`- ${dayjs(post.createdAt).fromNow()}`}</span>
+      <Link href={`/posts/${posts.id}`}><span className="text-slate-500">{`- ${dayjs(posts.createdAt).fromNow()}`}</span>
       </Link>
       </div>
-      <div>{post.content}</div>
+      <div>{posts.content}</div>
       </div>
     </div>
   );
@@ -92,7 +92,7 @@ const Feed = () => {
   return(
     <div className="flex flex-col ">
             {data.map((fullPost) => (
-              <PostView {...fullPost} key={fullPost.post.id}/>
+              <PostView {...fullPost} key={fullPost.posts.id}/>
             ))}
     </div>
 

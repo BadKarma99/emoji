@@ -8,6 +8,33 @@ import { clerkClient } from "@clerk/nextjs/server";
 import { User } from "@clerk/nextjs/dist/api";
 import { TRPCError } from "@trpc/server";
 import { filterUserForClient } from "../../helpers/filterUserForClients";
+import type { Post } from "@prisma/client";
+
+
+const addUsersDataToPosts = async (posts: Post[]) => {
+
+    const users = (
+        await clerkClient.users.getUserList(
+        {
+            userId: posts.map((p) => p.autherId),
+            limit:100
+        }
+    )).map(filterUserForClient);
+    console.log(users)
+    return posts.map((posts) => {
+
+        const auther = users.find((user) => user.id === posts.autherId)
+        if(!auther) throw new TRPCError({code: 'INTERNAL_SERVER_ERROR', message: 'Author for the Post not found'})
+        return {
+        posts,
+        auther: {
+            ...auther,
+            name : auther.name
+        },
+        };
+    });
+
+}
 
 
 
@@ -37,27 +64,26 @@ export const postRouter = createTRPCRouter({
             ]
         }
     );
-    const users = (
-        await clerkClient.users.getUserList(
-        {
-            userId: post.map((p) => p.autherId),
-            limit:100
-        }
-    )).map(filterUserForClient);
-    console.log(users)
-    return post.map((post) => {
-
-        const auther = users.find((user) => user.id === post.autherId)
-        if(!auther) throw new TRPCError({code: 'INTERNAL_SERVER_ERROR', message: 'Author for the Post not found'})
-        return {
-        post,
-        auther: {
-            ...auther,
-            name : auther.name
-        },
-        };
-    })
+   
+    return addUsersDataToPosts(post);
   }),
+
+  getPostsByUserId: publicProcedure.input(z.object({
+    userId: z.string(),
+  })).query( ({ ctx, input }) => ctx.prisma.post.findMany({
+    where: {
+        autherId: input.userId,
+    },
+    take: 100,
+    orderBy:[
+        {
+            createdAt: 'desc'
+        }
+    ]
+    }).then(addUsersDataToPosts)),
+
+
+
 
     create: privateProcedure.input(z.object({
         content: z.string().emoji("only emojis are allowed").min(1).max(280),

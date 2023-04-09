@@ -8,10 +8,29 @@ import type { GetStaticProps, InferGetServerSidePropsType, NextPage } from 'next
 import Image from 'next/image'
 import { createServerSideHelpers } from '@trpc/react-query/server';
 import { Head } from 'next/document'
-import { PageLayout } from '../components/components'
+import { PageLayout } from '../components/page_layout'
+import { PostView } from '../components/postview'
 
 
 type PageProps = InferGetServerSidePropsType<typeof getStaticProps>
+
+const ProfileFeed = (props: { userId: string }) => {
+  const { data, isLoading } = api.posts.getPostsByUserId.useQuery({
+    userId: props.userId,
+  });
+
+  if (isLoading) return <LoadingSpinner />;
+
+  if (!data || data.length === 0) return <div>User has not posted</div>;
+
+  return (
+    <div className="flex flex-col">
+      {data.map((fullPost) => (
+              <PostView key={fullPost.posts.id} {...fullPost} />
+      ))}
+    </div>
+  );
+};
 
 const ProfilePage: NextPage<PageProps> = ({username}) => {
 
@@ -40,6 +59,7 @@ const ProfilePage: NextPage<PageProps> = ({username}) => {
         <div className="p-4 text-2xl font-bold">{`@${data.name 
           }`}</div>
         <div className="w-full border-b border-slate-400" />
+        <ProfileFeed userId={data.id} />
       </PageLayout>
     </>
   )
