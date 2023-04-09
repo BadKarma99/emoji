@@ -29,8 +29,9 @@ const PostView = (props: postWithUser) => {
       <img src = {auther.profilePicture} className="h-10 w-10 rounded-full" />
       <div className="flex flex-col">
       <div className="flex gap-2 text-slate-500">
-      <span className="">{auther.name}</span>
-      <span className="text-slate-500">{`- ${dayjs(post.createdAt).fromNow()}`}</span>
+     <Link href={`/@${auther.name}`}> <span className="">{auther.name}</span> </Link>
+      <Link href={`/posts/${post.id}`}><span className="text-slate-500">{`- ${dayjs(post.createdAt).fromNow()}`}</span>
+      </Link>
       </div>
       <div>{post.content}</div>
       </div>
