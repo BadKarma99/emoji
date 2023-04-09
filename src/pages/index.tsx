@@ -17,6 +17,7 @@ import {
   SignUpButton,
   useUser,
 } from "@clerk/nextjs";
+import { useState } from "react";
 
 type postWithUser = RouterOutputs["posts"]["getAll"][number];
 
@@ -38,7 +39,19 @@ const PostView = (props: postWithUser) => {
 
 const CreatePostWizard = () => {
   const { user } = useUser();
+  const [input, setInput] = useState("");
+
+  const ctx = api.useContext();
+
+  const { mutateAsync: createPost,isLoading: posting } = api.posts.create.useMutation(
+    {onSuccess: () => {
+      void ctx.posts.getAll.invalidate();
+    }}
+  );
+
+
   if (!user) return null;
+  if(posting) return <LoadingSpinner/>;
 
   return (
     <div className="flex gap-3">
@@ -46,7 +59,15 @@ const CreatePostWizard = () => {
       <input
         placeholder="Type some Emojis"
         className="grow border-none bg-transparent focus:outline-none"
+        type="text"
+        value={input}
+        onChange={(e) => setInput(e.target.value)}
       />
+      <button onClick={() => {
+        createPost({ content: input }),
+        setInput("")
+    
+    }}>Post</button>
     </div>
   );
 };
@@ -60,7 +81,7 @@ const Feed = () => {
 
   return(
     <div className="flex flex-col ">
-            {[...data, ...data]?.map((fullPost) => (
+            {data.map((fullPost) => (
               <PostView {...fullPost} key={fullPost.post.id}/>
             ))}
     </div>
