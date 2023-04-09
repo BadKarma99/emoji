@@ -10,6 +10,7 @@ import { createServerSideHelpers } from '@trpc/react-query/server';
 import { Head } from 'next/document'
 import { PageLayout } from '../components/page_layout'
 import { PostView } from '../components/postview'
+import { generateSSGHelper } from '../server/helpers/ssgHelper'
 
 
 type PageProps = InferGetServerSidePropsType<typeof getStaticProps>
@@ -67,11 +68,7 @@ const ProfilePage: NextPage<PageProps> = ({username}) => {
 
 export const getStaticProps: GetStaticProps = async (context) => {
 
-    const ssg = createServerSideHelpers({
-        router: appRouter,
-        ctx: {prisma, userId: null},
-        transformer: superjson, // optional - adds superjson serialization
-      });
+    const ssg = generateSSGHelper();
 
       const slug  = context.params?.slug
 
