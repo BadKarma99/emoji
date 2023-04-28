@@ -21,7 +21,7 @@ model Post {
     createdAt DateTime @default(now())
 
     content String @db.VarChar(255)
-    autherId St
+    autherId String
 
     @@index([autherId])
 }
