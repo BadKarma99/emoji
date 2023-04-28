@@ -8,7 +8,7 @@ import { Toaster } from "react-hot-toast";
 
 const MyApp: AppType = ({ Component, pageProps }) => {
   return (
-    <ClerkProvider {...pageProps} >
+    <ClerkProvider frontendApi={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY} {...pageProps} >
       <Toaster 
       position="top-left"
       reverseOrder={false}
